@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Aplikasi Pembelajaran Eigenvalue & Eigenfunction | Fisika Kuantum Interaktif</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Poppins', 'Tahoma', Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            color: #f1f5f9;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            padding: 0.9rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border-bottom: 2px solid #38bdf8;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #38bdf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.08);
+            color: #e2e8f0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-size: 0.9rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-btn:hover {
+            background: #38bdf8;
+            color: #0f172a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56,189,248,0.3);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(105deg, #38bdf8, #7c3aed);
+            color: white;
+            box-shadow: 0 5px 12px rgba(56,189,248,0.4);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            animation: fadeInUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards & Glassmorph */
+        .card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            padding: 28px;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(56,189,248,0.2);
+            margin-bottom: 28px;
+            transition: all 0.2s;
+        }
+
+        .card-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(115deg, #f1f5f9, #94a3b8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 3px solid #38bdf8;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(125deg, #0f172ad9, #1e293bd9), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"><circle cx="20" cy="20" r="2" fill="%2338bdf8"/><circle cx="80" cy="40" r="1.5" fill="%23c084fc"/></svg>');
+            border-radius: 2rem;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #38bdf8, #e879f9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: #1e293b;
+            padding: 1.6rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            transition: all 0.25s;
+            cursor: pointer;
+            border-left: 5px solid #38bdf8;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            background: #2d3a4e;
+            border-left-color: #e879f9;
+        }
+
+        .feature-icon {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+        }
+
+        /* Canvas & Visualization */
+        .canvas-wrapper {
+            background: #0a0f1c;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin: 20px 0;
+            box-shadow: inset 0 0 0 1px rgba(56,189,248,0.2), 0 10px 20px -5px black;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            background: #0b1120;
+            border-radius: 1rem;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: rgba(15, 25, 45, 0.9);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin: 20px 0;
+            border: 1px solid #38bdf8;
+        }
+
+        .slider-group {
+            margin: 1rem 0;
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 1rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 5px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #38bdf8, #c084fc);
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 6px #38bdf8;
+        }
+
+        /* Quantum Buttons */
+        .quantum-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .quantum-btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 60px;
+            background: #1e293b;
+            color: #cbd5e1;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1 0 auto;
+        }
+
+        .quantum-btn.active {
+            background: linear-gradient(115deg, #38bdf8, #7c3aed);
+            color: white;
+            box-shadow: 0 6px 14px rgba(56,189,248,0.3);
+            transform: scale(1.02);
+        }
+
+        /* Matrix & Info Grids */
+        .matrix-container {
+            background: #0f172f;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border: 1px solid #38bdf8;
+        }
+
+        .matrix-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin: 4px 0;
+        }
+
+        .matrix-cell {
+            width: 55px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1e293b;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #a5f3fc;
+            font-family: monospace;
+        }
+
+        .matrix-cell.highlight {
+            background: #38bdf8;
+            color: #0f172a;
+            box-shadow: 0 0 8px #38bdf8;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-box {
+            background: #0f172f;
+            padding: 1rem;
+            border-radius: 1rem;
+            text-align: center;
+            border-left: 5px solid #38bdf8;
+        }
+
+        .info-box .value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        /* Team Cards */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-card {
+            background: #1e293b;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid #38bdf855;
+        }
+
+        .team-card:hover {
+            transform: translateY(-8px);
+            border-color: #c084fc;
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #38bdf8, #7c3aed);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            box-shadow: 0 0 0 3px #0f172a, 0 0 0 6px #38bdf8;
+        }
+
+        /* Quiz */
+        .quiz-container {
+            background: #0f172f;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+        }
+
+        .quiz-question {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-option {
+            background: #1e293b;
+            padding: 12px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #334155;
+        }
+
+        .quiz-option:hover {
+            background: #2d3a55;
+            border-color: #38bdf8;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            background: #38bdf8;
+            color: #0f172a;
+            font-weight: bold;
+        }
+
+        .quiz-option.correct {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .quiz-option.wrong {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        button {
+            background: #38bdf8;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: #0f172a;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background: #7c3aed;
+            color: white;
+            transform: scale(0.98);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            background: #0f172a80;
+            border-radius: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 700px) {
+            .hero h1 { font-size: 1.8rem; }
+            .card-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">⚛️ EigenLearn | Quantum Visual</div>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-page="beranda">🏠 Beranda</button>
+                <button class="nav-btn" data-page="konsep">📚 Konsep</button>
+                <button class="nav-btn" data-page="simulasi">🎮 Simulasi</button>
+                <button class="nav-btn" data-page="perhitungan">🧮 Matriks</button>
+                <button class="nav-btn" data-page="visualisasi">📊 Visual</button>
+                <button class="nav-btn" data-page="kuis">❓ Kuis</button>
+                <button class="nav-btn" data-page="kelompok">👥 Kelompok</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <!-- BERANDA -->
+        <div id="beranda" class="page active">
+            <div class="hero">
+                <h1>Eigenvalue & Eigenfunction</h1>
+                <p>Simulasi kuantum & pembelajaran interaktif • Partikel dalam Kotak 1D</p>
+            </div>
+            <div class="card">
+                <div class="card-title">🎯 Tujuan Pembelajaran</div>
+                <ul style="line-height: 1.9; margin-left: 1.5rem;">
+                    <li>✅ Memahami eigenvalue sebagai tingkat energi diskrit (Eₙ ∝ n²)</li>
+                    <li>✅ Memahami eigenfunction ψₙ(x) = √(2/L) sin(nπx/L)</li>
+                    <li>✅ Menjelaskan hubungan antara eigenvalue & eigenfunction</li>
+                    <li>✅ Menyelesaikan persamaan Schrödinger untuk sumur potensial</li>
+                    <li>✅ Visualisasi probabilitas |ψ|² dan node kuantum</li>
+                </ul>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card" data-nav="konsep"><div class="feature-icon">📘</div><h3>Konsep Dasar</h3><p>Teori & persamaan utama</p></div>
+                <div class="feature-card" data-nav="simulasi"><div class="feature-icon">🎛️</div><h3>Simulasi Interaktif</h3><p>Ubah n & lebar sumur</p></div>
+                <div class="feature-card" data-nav="perhitungan"><div class="feature-icon">🧮</div><h3>Diagonalisasi Matriks</h3><p>Hamiltonian & eigenvalue</p></div>
+                <div class="feature-card" data-nav="kuis"><div class="feature-icon">🏆</div><h3>Kuis Pemahaman</h3><p>Uji pengetahuan Anda</p></div>
+            </div>
+        </div>
+
+        <!-- KONSEP -->
+        <div id="konsep" class="page">
+            <div class="card">
+                <div class="card-title">📚 PERSAMAAN SCHRÖDINGER & KUANTISASI</div>
+                <div style="background:#0b1122; padding:1.5rem; border-radius:1.5rem; text-align:center; margin-bottom:2rem;">
+                    <div style="font-size:2rem; font-family:monospace;">Ĥ ψ = E ψ</div>
+                    <p style="margin-top:10px;">Operator Hamiltonian · Fungsi Gelombang = Energi · Fungsi Gelombang</p>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                    <div style="background:#0f172f; border-radius:1.2rem; padding:1.2rem; border-left:5px solid #f97316;">
+                        <h3 style="color:#f97316;">📈 Eigenvalue (Eₙ)</h3>
+                        <p>Energi terkuantisasi: Eₙ = n² · (h²/8mL²)</p>
+                        <div style="font-family:monospace; background:#00000040; padding:8px; border-radius:8px; margin-top:10px;">Eₙ ∝ n² , n = 1,2,3...</div>
+                    </div>
+                    <div style="background:#0f172f; border-radius:1.2rem; padding:1.2rem; border-left:5px solid #38bdf8;">
+                        <h3 style="color:#38bdf8;">📉 Eigenfunction (ψₙ)</h3>
+                        <p>ψₙ(x) = √(2/L) sin(nπx/L) , 0 < x < L</p>
+                        <div style="font-family:monospace; background:#00000040; padding:8px; border-radius:8px; margin-top:10px;">|ψ|² = probabilitas</div>
+                    </div>
+                </div>
+                <div style="margin-top:1.8rem; background:#0f172f; padding:1.2rem; border-radius:1.2rem;">
+                    <p><strong>🔍 Interpretasi:</strong> Node = titik simpul (ψ=0), jumlah node = n-1. Fungsi eigen ortogonal dan ternormalisasi.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIMULASI -->
+        <div id="simulasi" class="page">
+            <div class="card">
+                <div class="card-title">🎮 SIMULASI EIGENFUNCTION & PROBABILITAS</div>
+                <div class="canvas-wrapper">
+                    <canvas id="simCanvas" width="700" height="400" style="width:100%; height:auto; max-width:700px; margin:0 auto; display:block;"></canvas>
+                    <div style="display:flex; justify-content:center; gap:24px; margin-top:10px; flex-wrap:wrap;">
+                        <span style="color:#f97316;">🔴 ψₙ(x)</span>
+                        <span style="color:#2dd4bf;">🟢 |ψₙ|²</span>
+                        <span style="color:#facc15;">🟡 Node (ψ=0)</span>
+                    </div>
+                </div>
+                <div class="control-panel">
+                    <h4 style="margin-bottom:10px;">🔢 Bilangan Kuantum (n)</h4>
+                    <div class="quantum-buttons" id="quantumButtonsSim">
+                        <button class="quantum-btn active" data-n="1">n=1</button>
+                        <button class="quantum-btn" data-n="2">n=2</button>
+                        <button class="quantum-btn" data-n="3">n=3</button>
+                        <button class="quantum-btn" data-n="4">n=4</button>
+                        <button class="quantum-btn" data-n="5">n=5</button>
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label"><span>📏 Lebar Sumur (L) </span><span id="simWellValue">1.00</span></div>
+                        <input type="range" id="simWellSlider" min="0.6" max="2.2" value="1.0" step="0.01">
+                    </div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-box"><div class="label">Eigenvalue Eₙ</div><div class="value" id="simEigenVal">1.000</div></div>
+                    <div class="info-box"><div class="label">Jumlah Node</div><div class="value" id="simNodeCount">0</div></div>
+                    <div class="info-box"><div class="label">Normalisasi ∫|ψ|²</div><div class="value" id="simNormVal">1.000</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERHITUNGAN MATRIKS -->
+        <div id="perhitungan" class="page">
+            <div class="card">
+                <div class="card-title">🧮 MATRIKS HAMILTONIAN (Basis Partikel dalam Kotak)</div>
+                <div><label>Ukuran Basis (N): <input type="number" id="basisSize" min="2" max="8" value="4" style="width:80px; background:#1e293b; color:white; border-radius:8px;"></label>
+                <button onclick="computeMatrix()" style="margin-left:12px;">Diagonalisasi</button></div>
+                <div class="matrix-container"><h4>Matriks H (diagonal, Hᵢⱼ = i²δᵢⱼ)</h4><div id="matrixDisplay"></div></div>
+                <div class="matrix-container"><h4>📊 Eigenvalues (Energi terukur)</h4><div id="eigenvaluesDisplay"></div></div>
+                <div style="background:#0f172f; padding:1rem; border-radius:1rem;"><p><strong>Formula:</strong> Hᵢⱼ = (i²π²ħ²/2mL²) δᵢⱼ . Energi skala ~ n².</p></div>
+            </div>
+        </div>
+
+        <!-- VISUALISASI PERBANDINGAN -->
+        <div id="visualisasi" class="page">
+            <div class="card">
+                <div class="card-title">📊 PERBANDINGAN ψₙ & ENERGI LEVEL</div>
+                <canvas id="compareCanvas" width="600" height="280" style="width:100%; max-width:650px; background:#0b1120; border-radius:1rem;"></canvas>
+                <div class="quantum-buttons" style="margin-top:15px;">
+                    <button class="quantum-btn" data-compare="1">n=1</button>
+                    <button class="quantum-btn" data-compare="2">n=2</button>
+                    <button class="quantum-btn" data-compare="3">n=3</button>
+                    <button class="quantum-btn" data-compare="4">n=4</button>
+                </div>
+                <h4 style="margin-top:28px;">📈 Hubungan Eₙ ∝ n²</h4>
+                <canvas id="energyCanvas" width="600" height="180" style="width:100%; background:#0b1120; border-radius:1rem;"></canvas>
+            </div>
+        </div>
+
+        <!-- KUIS -->
+        <div id="kuis" class="page">
+            <div class="card">
+                <div class="card-title">❓ KUIS INTERAKTIF</div>
+                <div class="quiz-container" id="quizContainerMain">
+                    <div class="quiz-question" id="quizQuestion"></div>
+                    <div class="quiz-options" id="quizOptionsList"></div>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <button id="checkAnswerBtn">✅ Periksa Jawaban</button>
+                        <button id="nextQuizBtn">⏩ Pertanyaan Berikutnya</button>
+                    </div>
+                    <div id="quizFeedback" style="margin-top:18px; font-weight:bold;"></div>
+                    <div class="quiz-score" id="quizScoreDisplay">Skor: 0/5</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KELOMPOK -->
+        <div id="kelompok" class="page">
+            <div class="card">
+                <div class="card-title">👥 TIM PENGEMBANG</div>
+                <div class="team-grid">
+                    <div class="team-card"><div class="team-avatar">👩‍🔬</div><h3>Ici Sry Ulina Simbolon</h3><p>Fisika & Kuantisasi</p></div>
+                    <div class="team-card"><div class="team-avatar">🧪</div><h3>Ronna Vivi Lina Manalu</h3><p>Simulasi & Visual</p></div>
+                    <div class="team-card"><div class="team-avatar">📐</div><h3>Ribka Putri O. Lbn Raja</h3><p>Algoritma Matriks</p></div>
+                    <div class="team-card"><div class="team-avatar">⚛️</div><h3>Juliana Gloria</h3><p>Desain & Kuis</p></div>
+                </div>
+                <div style="text-align:center; margin-top:2rem; padding:1.5rem; background:linear-gradient(135deg,#1e293b,#0f172a); border-radius:1.5rem;">
+                    <p>📧 Kontak: icisrysimbolon@gmail.com | Program Studi Fisika - Universitas Negeri Medan</p>
+                    <p>© 2026 - Simulasi Eigenvalue/Eigenfunction Interaktif</p>
+                </div>
+            </div>
+        </div>
+        <footer>🧪 Aplikasi Pembelajaran: eigenvalue & eigenfunction | Partikel dalam Kotak 1D</footer>
+    </div>
+
+    <script>
+        // ======================= NAVIGATION =======================
+        function changePage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll(`.nav-btn`).forEach(btn => { if(btn.innerText.toLowerCase().includes(pageId === 'beranda' ? 'beranda' : pageId === 'konsep' ? 'konsep' : pageId === 'simulasi' ? 'simulasi' : pageId === 'perhitungan' ? 'matriks' : pageId === 'visualisasi' ? 'visual' : pageId === 'kuis' ? 'kuis' : 'kelompok')) btn.classList.add('active'); });
+            if(pageId === 'simulasi') initSimCanvasAndDraw();
+            if(pageId === 'perhitungan') computeMatrix();
+            if(pageId === 'visualisasi') { drawComparison(1); drawEnergyGraph(); }
+            if(pageId === 'kuis') initQuiz();
+        }
+
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let txt = btn.getAttribute('data-page') || (btn.innerText.includes('Beranda')?'beranda':btn.innerText.includes('Konsep')?'konsep':btn.innerText.includes('Simulasi')?'simulasi':btn.innerText.includes('Matriks')?'perhitungan':btn.innerText.includes('Visual')?'visualisasi':btn.innerText.includes('Kuis')?'kuis':'kelompok');
+                changePage(txt);
+            });
+        });
+        document.querySelectorAll('.feature-card[data-nav]').forEach(card => {
+            card.addEventListener('click',()=> changePage(card.getAttribute('data-nav')));
+        });
+
+        // ======================= SIMULASI =======================
+        let simCanvas, simCtx, simN=1, simL=1.0;
+        function initSimCanvasAndDraw() {
+            simCanvas = document.getElementById('simCanvas');
+            if(simCanvas) simCtx = simCanvas.getContext('2d');
+            updateSimDisplayAndDraw();
+        }
+        function updateSimDisplayAndDraw() {
+            let energy = (simN*simN)/(simL*simL);
+            document.getElementById('simEigenVal').innerText = energy.toFixed(4);
+            document.getElementById('simNodeCount').innerText = simN-1;
+            document.getElementById('simNormVal').innerText = '1.000';
+            drawWaveSim();
+        }
+        function drawWaveSim() {
+            if(!simCtx) return;
+            const w = simCanvas.width, h = simCanvas.height;
+            simCtx.clearRect(0,0,w,h);
+            simCtx.fillStyle = '#0b1120';
+            simCtx.fillRect(0,0,w,h);
+            const left = 60, right = w-60, rangeX = right-left;
+            const midY = h/2;
+            simCtx.strokeStyle = '#38bdf8';
+            simCtx.lineWidth = 2;
+            simCtx.beginPath(); simCtx.moveTo(left,20); simCtx.lineTo(left,h-20); simCtx.stroke();
+            simCtx.beginPath(); simCtx.moveTo(right,20); simCtx.lineTo(right,h-20); simCtx.stroke();
+            simCtx.beginPath(); simCtx.moveTo(left,midY); simCtx.lineTo(right,midY); simCtx.strokeStyle='#475569'; simCtx.stroke();
+            let maxPsi=0; let pts=[];
+            for(let i=0;i<=300;i++){
+                let x = i/300;
+                let psi = Math.sqrt(2/simL) * Math.sin(simN * Math.PI * x);
+                maxPsi = Math.max(maxPsi, Math.abs(psi));
+                pts.push(psi);
+            }
+            let scale = (h/2 - 45) / (maxPsi+0.05);
+            // prob area
+            simCtx.fillStyle = 'rgba(45,212,191,0.25)';
+            simCtx.beginPath(); simCtx.moveTo(left, midY);
+            for(let i=0;i<=300;i++){
+                let x = i/300;
+                let psi = pts[i];
+                let prob = psi*psi;
+                let canvasX = left + x*rangeX;
+                let probY = midY - prob * scale*1.8;
+                simCtx.lineTo(canvasX, probY);
+            }
+            simCtx.lineTo(right, midY); simCtx.fill();
+            // wavefunction
+            simCtx.beginPath(); simCtx.strokeStyle='#f97316'; simCtx.lineWidth=2.5;
+            for(let i=0;i<=300;i++){
+                let x=i/300, psi=pts[i];
+                let canvasX=left+x*rangeX;
+                let psiY=midY - psi*scale;
+                if(i===0) simCtx.moveTo(canvasX, psiY); else simCtx.lineTo(canvasX, psiY);
+            }
+            simCtx.stroke();
+            // nodes
+            simCtx.fillStyle='#facc15';
+            for(let k=0;k<=simN;k++){
+                let xNode = k/simN;
+                if(xNode>=0 && xNode<=1){
+                    let nodeX = left + xNode*rangeX;
+                    simCtx.beginPath(); simCtx.arc(nodeX, midY, 5,0,2*Math.PI); simCtx.fill();
+                }
+            }
+        }
+        document.getElementById('simWellSlider')?.addEventListener('input',(e)=>{
+            simL=parseFloat(e.target.value); document.getElementById('simWellValue').innerText=simL.toFixed(2);
+            updateSimDisplayAndDraw();
+        });
+        document.querySelectorAll('#quantumButtonsSim .quantum-btn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                simN=parseInt(btn.getAttribute('data-n'));
+                document.querySelectorAll('#quantumButtonsSim .quantum-btn').forEach(b=>b.classList.remove('active'));
+                btn.classList.add('active');
+                updateSimDisplayAndDraw();
+            });
+        });
+        
+        // ==================== PERHITUNGAN MATRIKS ====================
+        function computeMatrix(){
+            let N = parseInt(document.getElementById('basisSize').value);
+            let html='<div>';
+            for(let i=0;i<N;i++){
+                html+='<div class="matrix-row">';
+                for(let j=0;j<N;j++){
+                    let val = (i===j) ? (i+1)*(i+1) : 0;
+                    let cls = (i===j)?'highlight':'';
+                    html+=`<div class="matrix-cell ${cls}">${val}</div>`;
+                }
+                html+='</div>';
+            }
+            html+='</div>';
+            document.getElementById('matrixDisplay').innerHTML=html;
+            let eigenHtml='<div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">';
+            for(let i=0;i<N;i++){
+                eigenHtml+=`<div style="background:#38bdf8; padding:6px 16px; border-radius:40px;">E<sub>${i+1}</sub> = ${(i+1)*(i+1)}</div>`;
+            }
+            eigenHtml+='</div>';
+            document.getElementById('eigenvaluesDisplay').innerHTML=eigenHtml;
+        }
+        
+        // ==================== VISUALISASI ====================
+        let compareCanvas = document.getElementById('compareCanvas'), compareCtx=compareCanvas?.getContext('2d');
+        function drawComparison(n){
+            if(!compareCtx) return;
+            const w=compareCanvas.width, h=compareCanvas.height;
+            compareCtx.clearRect(0,0,w,h);
+            compareCtx.fillStyle='#0b1120'; compareCtx.fillRect(0,0,w,h);
+            let left=50, right=w-50, rangeX=right-left, midY=h/2;
+            compareCtx.strokeStyle='#64748b'; compareCtx.beginPath(); compareCtx.moveTo(left,midY); compareCtx.lineTo(right,midY); compareCtx.stroke();
+            compareCtx.beginPath(); compareCtx.moveTo(left,20); compareCtx.lineTo(left,h-20); compareCtx.stroke();
+            compareCtx.beginPath(); compareCtx.moveTo(right,20); compareCtx.lineTo(right,h-20); compareCtx.stroke();
+            compareCtx.beginPath(); compareCtx.strokeStyle='#f97316'; compareCtx.lineWidth=2.5;
+            for(let i=0;i<=300;i++){
+                let x=i/300;
+                let psi = Math.sqrt(2)*Math.sin(n*Math.PI*x);
+                let canvasX=left+x*rangeX;
+                let psiY=midY - psi*55;
+                if(i===0) compareCtx.moveTo(canvasX, psiY); else compareCtx.lineTo(canvasX, psiY);
+            }
+            compareCtx.stroke();
+            compareCtx.fillStyle='#facc15'; compareCtx.font='bold 14px "Segoe UI"'; compareCtx.fillText(`ψₙ(x) untuk n = ${n}`, w/2-80, 30);
+        }
+        document.querySelectorAll('#visualisasi .quantum-btn').forEach(btn=>{
+            btn.addEventListener('click',()=>drawComparison(parseInt(btn.getAttribute('data-compare'))));
+        });
+        function drawEnergyGraph(){
+            let eCanvas=document.getElementById('energyCanvas'), ctx=eCanvas?.getContext('2d');
+            if(!ctx) return;
+            ctx.clearRect(0,0,eCanvas.width,eCanvas.height);
+            ctx.fillStyle='#0b1120'; ctx.fillRect(0,0,eCanvas.width,eCanvas.height);
+            for(let n=1;n<=5;n++){
+                let x=40+(n-1)*100;
+                let barH=n*n*8;
+                ctx.fillStyle=`rgba(56,189,248,${0.5+n*0.08})`;
+                ctx.fillRect(x, eCanvas.height-40-barH, 35, barH);
+                ctx.fillStyle='#e2e8f0'; ctx.fillText(`E${n}=${n*n}`, x+5, eCanvas.height-45-barH);
+            }
+            ctx.fillStyle='#94a3b8'; ctx.fillText('Energi (Eₙ ∝ n²)', eCanvas.width/2-80, 25);
+        }
+        
+        // ==================== KUIS ====================
+        const quizData=[
+            {q:"Apa yang dimaksud eigenvalue dalam mekanika kuantum?", opts:["Fungsi gelombang","Tingkat energi diizinkan","Operator Hamiltonian","Probabilitas"], correct:1},
+            {q:"Jumlah node untuk n=3 pada partikel dalam kotak?", opts:["0","1","2","3"], correct:2},
+            {q:"Rumus eigenfunction partikel dalam kotak 1D:", opts:["√(2/L) cos(nπx/L)","√(2/L) sin(nπx/L)","√(2/L) e^(ikx)","√(2/L) xⁿ"], correct:1},
+            {q:"Jika lebar sumur (L) diperbesar, eigenvalue akan:", opts:["Semakin besar","Semakin kecil","Tetap","Tidak menentu"], correct:1},
+            {q:"Interpretasi |ψ(x)|²:", opts:["Energi partikel","Momentum partikel","Probabilitas posisi","Kecepatan"], correct:2}
+        ];
+        let quizIdx=0, quizScore=0, selectedQuiz=-1;
+        function initQuiz(){ quizIdx=0; quizScore=0; selectedQuiz=-1; renderQuizQuestion(); updateQuizScore(); }
+        function renderQuizQuestion(){
+            let qobj=quizData[quizIdx];
+            document.getElementById('quizQuestion').innerHTML=qobj.q;
+            let optsHtml='';
+            qobj.opts.forEach((opt,i)=>{
+                optsHtml+=`<div class="quiz-option" data-optidx="${i}">${opt}</div>`;
+            });
+            document.getElementById('quizOptionsList').innerHTML=optsHtml;
+            document.querySelectorAll('.quiz-option').forEach(opt=>{
+                opt.addEventListener('click',(e)=>{
+                    document.querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    selectedQuiz=parseInt(opt.getAttribute('data-optidx'));
+                });
+            });
+            document.getElementById('quizFeedback').innerHTML='';
+        }
+        function checkQuiz(){
+            if(selectedQuiz===-1){ document.getElementById('quizFeedback').innerHTML='⚠️ Pilih jawaban terlebih dahulu!'; return; }
+            let correct=quizData[quizIdx].correct;
+            let optionsDiv=document.querySelectorAll('.quiz-option');
+            optionsDiv.forEach((opt,idx)=>{
+                if(idx===correct) opt.classList.add('correct');
+                if(idx===selectedQuiz && idx!==correct) opt.classList.add('wrong');
+            });
+            if(selectedQuiz===correct){ quizScore++; document.getElementById('quizFeedback').innerHTML='✅ Benar!';}
+            else{ document.getElementById('quizFeedback').innerHTML=`❌ Salah. Jawaban benar: ${quizData[quizIdx].opts[correct]}`; }
+            updateQuizScore();
+        }
+        function nextQuiz(){
+            if(quizIdx+1 < quizData.length){ quizIdx++; selectedQuiz=-1; renderQuizQuestion(); }
+            else{ document.getElementById('quizFeedback').innerHTML=`🎉 Kuis selesai! Skor akhir: ${quizScore}/${quizData.length}`; }
+        }
+        function updateQuizScore(){ document.getElementById('quizScoreDisplay').innerText=`Skor: ${quizScore}/${quizData.length}`; }
+        document.getElementById('checkAnswerBtn')?.addEventListener('click',checkQuiz);
+        document.getElementById('nextQuizBtn')?.addEventListener('click',nextQuiz);
+        
+        // Init calls
+        window.onload=()=>{
+            changePage('beranda');
+            computeMatrix();
+            drawEnergyGraph();
+            initQuiz();
+        };
+    </script>
+</body>
+</html>
